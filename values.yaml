@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: iamdorsah/bastillion
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "v0.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -26,47 +26,48 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
+  targetPort: http
 
 ingress:
   enabled: false
   className: ""
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  - host: chart-example.local
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
 
 autoscaling:
   enabled: false
@@ -80,3 +81,20 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+env:
+  reset_application_ssh_key: "false" # @param set to true to regenerate and import SSH keys
+  ssh_key_type: "rsa" # @param SSH key type 'dsa', 'rsa', or 'ecdsa' for generated keys
+  ssh_key_length: "2048" # @param SSH key length for generated keys , 2048 => 'rsa','dsa'; 521 => 'ecdsa'force_user_key_generation
+  ssh_private_key: "" # @param private ssh key Provide path to private keyfile , leave blank to generate key pair
+  ssh_public_key: "" # @param public ssh key Provide path to public keyfile , leave blank to generate key pair
+  enable_internal_audit: "" # @param enable audit
+  delete_audit_log_after: "false" # @param keep audit logs for in days
+  server_alive_interval: "60" # @param The number of seconds that the client will wait before sending a null packet to the server to keep the connection alive
+  agent_forwarding: "false" # @param enable SSH agent forwarding 
+  one_time_password: "disabled" # @param enable two-factor authentication with a one-time password ('required', 'optional', or 'disabled')
+  key_management_enabled: "true" # @param set to false to disable key management
+  # If false, the Bastillion public key will be appended to the authorized_keys file (instead of it being overwritten completely).
+  force_user_key_generation: "false" # @param set to true to generate keys when added/managed by users and enforce strong passphrases set to false to allow users to set their own public key
+  auth_keys_refresh_interval: "120" # @param authorized_keys refresh interval in minutes (no refresh for <=0)
+  session_timeout: "15" # @param The session time out value of application in minutes
